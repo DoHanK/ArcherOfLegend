@@ -12,3 +12,10 @@ Saved
 *.suo
 *.xcodeproj
 *.xcworkspace
+
+# 패키징 산출물
+/Windows/
+/Windows.zip
+/Saved/StagedBuilds/
+/Saved/Cooked/
+/Build/
