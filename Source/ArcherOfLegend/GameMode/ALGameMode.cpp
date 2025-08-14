@@ -6,9 +6,10 @@
 AALGameMode::AALGameMode()
 {
 	/*Set Character*/
-	//static ConstructorHelpers::FClassFinder<APawn> CharacterRef(TEXT(""));
-
-
+	static ConstructorHelpers::FClassFinder<APawn> PlayerCharacterRef(TEXT("/Script/CoreUObject.Class'/Script/ArcherOfLegend.ALCharacterPlayer'"));
+	if (PlayerCharacterRef.Class) {
+		DefaultPawnClass = PlayerCharacterRef.Class;
+	}
 
 	
 	/*Set Controller*/
