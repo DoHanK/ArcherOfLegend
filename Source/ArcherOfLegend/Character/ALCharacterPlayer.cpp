@@ -18,6 +18,11 @@ AALCharacterPlayer::AALCharacterPlayer()
 		GetMesh()->SetSkeletalMesh(PlayerMeshRef.Object);
 	}
 
+	static ConstructorHelpers::FClassFinder<UAnimInstance> PlayerAnimInstanceRef(TEXT("/Game/ArcherOfLegend/Animation/ABP_Archer.ABP_Archer_C"));
+	if (PlayerAnimInstanceRef.Class) {
+		GetMesh()->SetAnimClass(PlayerAnimInstanceRef.Class);
+	}
+
 	
 	//Camera Setting
 	CameraBoom = CreateDefaultSubobject<USpringArmComponent>(TEXT("CameraBoom"));
@@ -30,27 +35,27 @@ AALCharacterPlayer::AALCharacterPlayer()
 	FollowCamera->bUsePawnControlRotation = false;
 
 
-	static ConstructorHelpers::FObjectFinder<UInputMappingContext> InputMappingContextRef(TEXT("/Script/EnhancedInput.InputMappingContext'/Game/Input/IMC_Default.IMC_Default'"));
+	static ConstructorHelpers::FObjectFinder<UInputMappingContext> InputMappingContextRef(TEXT("/Script/EnhancedInput.InputMappingContext'/Game/ArcherOfLegend/Input/IMC_Default.IMC_Default'"));
 	if (nullptr != InputMappingContextRef.Object) {
 		DefaultMappingContext = InputMappingContextRef.Object;
 	}
 
-	static ConstructorHelpers::FObjectFinder<UInputAction> InputActionMoveRef(TEXT("/Script/EnhancedInput.InputAction'/Game/Input/Action/IA_Move.IA_Move'"));
+	static ConstructorHelpers::FObjectFinder<UInputAction> InputActionMoveRef(TEXT("/Script/EnhancedInput.InputAction'/Game/ArcherOfLegend/Input/Action/IA_Move.IA_Move'"));
 	if (nullptr != InputActionMoveRef.Object) {
 		MoveAction = InputActionMoveRef.Object;
 	}
 
-	static ConstructorHelpers::FObjectFinder<UInputAction> InputActionJumpRef(TEXT("/Script/EnhancedInput.InputAction'/Game/Input/Action/IA_Jump.IA_Jump'"));
+	static ConstructorHelpers::FObjectFinder<UInputAction> InputActionJumpRef(TEXT("/Script/EnhancedInput.InputAction'/Game/ArcherOfLegend/Input/Action/IA_Jump.IA_Jump'"));
 	if (nullptr != InputActionJumpRef.Object) {
 		JumpAction = InputActionJumpRef.Object;
 	}
 
-	static ConstructorHelpers::FObjectFinder<UInputAction> InputActionLookRef(TEXT("/Script/EnhancedInput.InputAction'/Game/Input/Action/IA_Look.IA_Look'"));
+	static ConstructorHelpers::FObjectFinder<UInputAction> InputActionLookRef(TEXT("/Script/EnhancedInput.InputAction'/Game/ArcherOfLegend/Input/Action/IA_Look.IA_Look'"));
 	if (nullptr != InputActionLookRef.Object) {
 		LookAction = InputActionLookRef.Object;
 	}
 
-	static ConstructorHelpers::FObjectFinder<UInputAction> InputActionZoomRef(TEXT("/Script/EnhancedInput.InputAction'/Game/Input/Action/IA_Zoom.IA_Zoom'"));
+	static ConstructorHelpers::FObjectFinder<UInputAction> InputActionZoomRef(TEXT("/Script/EnhancedInput.InputAction'/Game/ArcherOfLegend/Input/Action/IA_Zoom.IA_Zoom'"));
 	if (nullptr != InputActionZoomRef.Object) {
 		ZoomAction = InputActionZoomRef.Object;
 	}
