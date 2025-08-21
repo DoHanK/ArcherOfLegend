@@ -44,11 +44,8 @@ AALCharacterPlayer::AALCharacterPlayer()
 	if (WeaponRef.Object) {
 		WeaponState = EWeaponState::Sheathed;
 		Weapon->SetSkeletalMesh(WeaponRef.Object);
-		SetWeapon(WeaponState);
+
 	}
-
-
-
 
 	
 	//Camera Setting
@@ -105,6 +102,9 @@ void AALCharacterPlayer::BeginPlay()
 		//Subsystem->RemoveMappingContext(DefaultMappingContext);
 	}
 
+
+	//SetWeapon
+	SetWeapon(WeaponState);
 
 
 
