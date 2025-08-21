@@ -8,6 +8,7 @@
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "Character/ArcharEquipmentData.h"
 
 AALCharacterPlayer::AALCharacterPlayer()
 {
@@ -23,6 +24,32 @@ AALCharacterPlayer::AALCharacterPlayer()
 		GetMesh()->SetAnimClass(PlayerAnimInstanceRef.Class);
 	}
 
+
+	/*Load Character Weapon Offset*/
+	static ConstructorHelpers::FObjectFinder<UArcharEquipmentData> WeaponNoneRef(TEXT("/Script/ArcherOfLegend.ArcharEquipmentData'/Game/ArcherOfLegend/Character/ArcherNoneOffset.ArcherNoneOffset'"));
+	if (WeaponNoneRef.Object) {
+		WeaponOffsetManager.Add(EWeaponState::None, WeaponNoneRef.Object);
+	}
+	static ConstructorHelpers::FObjectFinder<UArcharEquipmentData> WeaponHandRef(TEXT("/Script/ArcherOfLegend.ArcharEquipmentData'/Game/ArcherOfLegend/Character/ArcherHandOffset.ArcherHandOffset'"));
+	if (WeaponHandRef.Object) {
+		WeaponOffsetManager.Add(EWeaponState::Equipped, WeaponHandRef.Object);
+	}
+	static ConstructorHelpers::FObjectFinder<UArcharEquipmentData> WeaponBackRef(TEXT("/Script/ArcherOfLegend.ArcharEquipmentData'/Game/ArcherOfLegend/Character/ArcherBackOffset.ArcherBackOffset'"));
+	if (WeaponBackRef.Object) {
+		WeaponOffsetManager.Add(EWeaponState::Sheathed, WeaponBackRef.Object);
+	}
+
+	/*Load Character Weapon*/
+	static ConstructorHelpers::FObjectFinder<USkeletalMesh> WeaponRef(TEXT("/Script/Engine.SkeletalMesh'/Game/ElfSelena/BaseMesh/Separate/SK_bow.SK_bow'"));
+	if (WeaponRef.Object) {
+		WeaponState = EWeaponState::Sheathed;
+		Weapon->SetSkeletalMesh(WeaponRef.Object);
+		SetWeapon(WeaponState);
+	}
+
+
+
+
 	
 	//Camera Setting
 	CameraBoom = CreateDefaultSubobject<USpringArmComponent>(TEXT("CameraBoom"));
@@ -34,7 +61,7 @@ AALCharacterPlayer::AALCharacterPlayer()
 	FollowCamera->SetupAttachment(CameraBoom,USpringArmComponent::SocketName);
 	FollowCamera->bUsePawnControlRotation = false;
 
-
+	//Input Setting
 	static ConstructorHelpers::FObjectFinder<UInputMappingContext> InputMappingContextRef(TEXT("/Script/EnhancedInput.InputMappingContext'/Game/ArcherOfLegend/Input/IMC_Default.IMC_Default'"));
 	if (nullptr != InputMappingContextRef.Object) {
 		DefaultMappingContext = InputMappingContextRef.Object;
@@ -59,6 +86,12 @@ AALCharacterPlayer::AALCharacterPlayer()
 	if (nullptr != InputActionZoomRef.Object) {
 		ZoomAction = InputActionZoomRef.Object;
 	}
+
+	static ConstructorHelpers::FObjectFinder<UInputAction> InputActionWeaponToggleRef(TEXT("/Script/EnhancedInput.InputAction'/Game/ArcherOfLegend/Input/Action/IA_WeaponToggle.IA_WeaponToggle'"));
+	if (nullptr != InputActionWeaponToggleRef.Object) {
+		WeaponToggleAction = InputActionWeaponToggleRef.Object;
+	}
+
 }
 
 void AALCharacterPlayer::BeginPlay()
@@ -87,9 +120,8 @@ void AALCharacterPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputC
 	EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Completed, this, &ACharacter::StopJumping);
 	EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &AALCharacterPlayer::Move);
 	EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &AALCharacterPlayer::Look);
-	EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &AALCharacterPlayer::Look);
-	EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &AALCharacterPlayer::Look);
 	EnhancedInputComponent->BindAction(ZoomAction, ETriggerEvent::Triggered, this, &AALCharacterPlayer::Zoom);
+	EnhancedInputComponent->BindAction(WeaponToggleAction, ETriggerEvent::Triggered, this, &AALCharacterPlayer::WeaponToggle);
 
 }
 
@@ -130,6 +162,25 @@ void AALCharacterPlayer::Zoom(const FInputActionValue& Value)
 	);
 }
 
+void AALCharacterPlayer::WeaponToggle(const FInputActionValue& Value)
+{
+	if (WeaponState == EWeaponState::Sheathed) {
+		WeaponState = EWeaponState::Equipped;
+	}
+	else if(WeaponState == EWeaponState::Equipped){
+		WeaponState = EWeaponState::Sheathed;
+	}
+
+	SetWeapon(WeaponState);
+}
+
+
+void AALCharacterPlayer::SetWeapon(const EWeaponState& state)
+{
+	Weapon->AttachToComponent(GetMesh(),FAttachmentTransformRules::SnapToTargetNotIncludingScale,WeaponOffsetManager[state]->WeaponComponentName);
+	Weapon->SetRelativeRotation(WeaponOffsetManager[state]->WeaponOffset.GetRotation());
+	Weapon->SetRelativeLocation(WeaponOffsetManager[state]->WeaponOffset.GetLocation());
+}
 
 
 

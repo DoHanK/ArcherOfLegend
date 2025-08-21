@@ -2,6 +2,7 @@
 
 #include "Character/ALCharacterBase.h"
 #include "Components/CapsuleComponent.h"
+#include "Character/ArcharEquipmentData.h"
 #include "GameFramework/CharacterMovementComponent.h"
 
 // Sets default values
@@ -9,7 +10,7 @@ AALCharacterBase::AALCharacterBase()
 {
 	
 	//World Character Basic Setting
-	// 
+	
 	//Pawn
  	bUseControllerRotationPitch = false;
 	bUseControllerRotationRoll = false;
@@ -35,7 +36,9 @@ AALCharacterBase::AALCharacterBase()
 	GetMesh()->SetCollisionProfileName(TEXT("CharacterMesh"));
 
 
-	//static ConstructorHelpers
+	//Equipment
+	WeaponState = EWeaponState::Equipped; /*손에 집은 상태로 시작*/
+	Weapon = CreateDefaultSubobject<USkeletalMeshComponent>(TEXT("Weapon"));
 
 
 }
