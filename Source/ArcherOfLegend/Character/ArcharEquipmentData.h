@@ -32,5 +32,19 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Equip|Offsets", Meta = (AllowPrivateAccess = "true"))
 	FTransform WeaponOffset;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Equip|Offsets|Animation", Meta = (AllowPrivateAccess = "true"))
+	FName FirstWeaponComponentName;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Equip|Offsets|Animation", Meta = (AllowPrivateAccess = "true"))
+	FTransform  FirstWeaponOffset;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Equip|Offsets|Animation", Meta = (AllowPrivateAccess = "true"))
+	FName SecondWeaponComponentName;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Equip|Offsets|Animation", Meta = (AllowPrivateAccess = "true"))
+	FTransform SecondWeaponOffset;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Animation)
+	TObjectPtr<class UAnimMontage> Montage;
 
 };

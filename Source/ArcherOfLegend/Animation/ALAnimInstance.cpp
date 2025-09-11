@@ -3,13 +3,14 @@
 
 #include "Animation/ALAnimInstance.h"
 #include "GameFramework/Character.h"
+#include "Character/ALCharacterPlayer.h"
 #include "GameFramework/CharacterMovementComponent.h"
-
 
 UALAnimInstance::UALAnimInstance()
 {
 	MovingThreshould = 3.0f;
 	JumpingThreshould = 100.0f;
+	UpperBlendWeight = 0.0f;
 }
 
 void UALAnimInstance::NativeInitializeAnimation()
@@ -38,4 +39,23 @@ void UALAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 		bIsJumping = bIsFalling & (Velocity.Z > JumpingThreshould);
 	}
 
+
+
+}
+
+
+void UALAnimInstance::SwapFirstWeaponHand() {
+
+	AALCharacterPlayer* player = Cast<AALCharacterPlayer>(GetOwningActor());
+	if (player) {
+		player->SwapWeaponHand(1);
+	}
+}
+
+void UALAnimInstance::SwapSecondWeaponHand() {
+
+	AALCharacterPlayer* player = Cast<AALCharacterPlayer>(GetOwningActor());
+	if (player) {
+		player->SwapWeaponHand(2);
+	}
 }

@@ -48,7 +48,21 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Character)
 	float JumpingThreshould;
+	//HandWeapon
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Character)
+	uint8 IsHandWeapon : 1;
+	
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Character)
+	float UpperBlendWeight;
 
+public:
+	UFUNCTION(BlueprintCallable, Category = "Weapon")
+	void SwapFirstWeaponHand();
+	UFUNCTION(BlueprintCallable, Category = "Weapon")
+	void SwapSecondWeaponHand();
 
+	void SetWeaponState(bool bHandWeapon){ IsHandWeapon = bHandWeapon;}
+	void SetUpperBlendWeight(float weight) { UpperBlendWeight = weight; }
+	
 
 };

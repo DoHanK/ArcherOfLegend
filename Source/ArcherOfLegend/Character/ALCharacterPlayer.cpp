@@ -9,6 +9,9 @@
 #include "EnhancedInputSubsystems.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Character/ArcharEquipmentData.h"
+#include "Animation/ALAnimInstance.h"
+#include "GameFramework/Actor.h"
+
 
 AALCharacterPlayer::AALCharacterPlayer()
 {
@@ -23,6 +26,9 @@ AALCharacterPlayer::AALCharacterPlayer()
 	if (PlayerAnimInstanceRef.Class) {
 		GetMesh()->SetAnimClass(PlayerAnimInstanceRef.Class);
 	}
+
+
+	//
 
 
 	/*Load Character Weapon Offset*/
@@ -102,11 +108,8 @@ void AALCharacterPlayer::BeginPlay()
 		//Subsystem->RemoveMappingContext(DefaultMappingContext);
 	}
 
-
 	//SetWeapon
 	SetWeapon(WeaponState);
-
-
 
 }
 
@@ -177,10 +180,49 @@ void AALCharacterPlayer::WeaponToggle(const FInputActionValue& Value)
 
 void AALCharacterPlayer::SetWeapon(const EWeaponState& state)
 {
-	Weapon->AttachToComponent(GetMesh(),FAttachmentTransformRules::SnapToTargetNotIncludingScale,WeaponOffsetManager[state]->WeaponComponentName);
-	Weapon->SetRelativeRotation(WeaponOffsetManager[state]->WeaponOffset.GetRotation());
-	Weapon->SetRelativeLocation(WeaponOffsetManager[state]->WeaponOffset.GetLocation());
+
+	if (USkeletalMeshComponent* MeshComp = GetMesh()) {
+		if (UALAnimInstance* AnimInstance = Cast<UALAnimInstance>(MeshComp->GetAnimInstance())) {
+			AnimInstance->Montage_Play(WeaponOffsetManager[state]->Montage);
+		
+			FOnMontageEnded EndDelegate;
+			EndDelegate.BindUObject(this, &AALCharacterPlayer::EndWeaponAnimation);
+			AnimInstance->Montage_SetEndDelegate(EndDelegate, WeaponOffsetManager[state]->Montage);
+			
+			AnimInstance->SetUpperBlendWeight(1.0f);
+		}
+	}
 }
 
+void AALCharacterPlayer::EndWeaponAnimation(UAnimMontage* TargetMontage, bool IsProperlyEnded)
+{
+	if (USkeletalMeshComponent* MeshComp = GetMesh()){
 
+		if (UALAnimInstance* AnimInstance = Cast<UALAnimInstance>(MeshComp->GetAnimInstance())){
+
+			AnimInstance->SetUpperBlendWeight(0.0f);
+
+			Weapon->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, WeaponOffsetManager[WeaponState]->WeaponComponentName);
+			Weapon->SetRelativeRotation(WeaponOffsetManager[WeaponState]->WeaponOffset.GetRotation());
+			Weapon->SetRelativeLocation(WeaponOffsetManager[WeaponState]->WeaponOffset.GetLocation());
+
+			AnimInstance->SetWeaponState(WeaponState == EWeaponState::Equipped);
+		}
+	}
+	
+}
+
+void AALCharacterPlayer::SwapWeaponHand(int count)
+{
+	if (count == 1) {
+		Weapon->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, WeaponOffsetManager[WeaponState]->FirstWeaponComponentName);
+		Weapon->SetRelativeRotation(WeaponOffsetManager[WeaponState]->FirstWeaponOffset.GetRotation());
+		Weapon->SetRelativeLocation(WeaponOffsetManager[WeaponState]->FirstWeaponOffset.GetLocation());
+	}
+	else {
+		Weapon->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, WeaponOffsetManager[WeaponState]->SecondWeaponComponentName);
+		Weapon->SetRelativeRotation(WeaponOffsetManager[WeaponState]->SecondWeaponOffset.GetRotation());
+		Weapon->SetRelativeLocation(WeaponOffsetManager[WeaponState]->SecondWeaponOffset.GetLocation());
+	}
+}
 

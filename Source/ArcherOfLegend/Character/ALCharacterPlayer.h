@@ -63,5 +63,10 @@ protected:
 
 public:
 	void SetWeapon(const EWeaponState& state);
+	void EndWeaponAnimation(UAnimMontage* TargetMontage, bool IsProperlyEnded);
+	
+	UFUNCTION()
+	void SwapWeaponHand(int count);
+
 
 };
