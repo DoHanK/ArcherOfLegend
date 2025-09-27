@@ -51,22 +51,34 @@ protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, Meta = (AllowPrivateAccess = "true"))
 	TObjectPtr<class UInputAction> WeaponToggleAction;
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, Meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<class UInputAction> MouseAttackAction;
 
 
 	void Move(const FInputActionValue& Value);
+	void MouseAttack(const FInputActionValue& value);
+	void EndMouseAttackAnimation(UAnimMontage* TargetMontage, bool IsProperlyEnded);
+
 	void Look(const FInputActionValue& Value);
 	void Zoom(const FInputActionValue& Value);	/*Camera ZoomIn And ZoomOut*/
 	void WeaponToggle(const FInputActionValue& Value);
 
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
-
+	
+	//UpperAnimation 
 public:
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = AnimationControl)
+	uint8 busedupper : 1;
+
 	void SetWeapon(const EWeaponState& state);
 	void EndWeaponAnimation(UAnimMontage* TargetMontage, bool IsProperlyEnded);
-	
-	UFUNCTION()
-	void SwapWeaponHand(int count);
 
+	UFUNCTION()
+	void SwapWeaponHand(int step);
+	void PauseBowLine();
+
+	//Attack
+	void fireAllow();
 
 };

@@ -43,6 +43,19 @@ void UALAnimInstance::NativeUpdateAnimation(float DeltaSeconds)
 
 }
 
+float UALAnimInstance::MonoMontage_Play(UAnimMontage* MontageToPlay, float InPlayRate, EMontagePlayReturnType ReturnValueType, float InTimeToStartMontageAt, bool bStopAllMontages)
+{
+
+	// 이미 어떤 몽타주라도 실행 중이면 실행 안 함
+	if (IsAnyMontagePlaying())
+	{
+		return -1.f; // 실행 실패 시 -1 반환
+	}
+
+	return Montage_Play(MontageToPlay, InPlayRate, ReturnValueType , InTimeToStartMontageAt, bStopAllMontages);
+	
+}
+
 
 void UALAnimInstance::SwapFirstWeaponHand() {
 
@@ -58,4 +71,25 @@ void UALAnimInstance::SwapSecondWeaponHand() {
 	if (player) {
 		player->SwapWeaponHand(2);
 	}
+}
+
+void UALAnimInstance::OnBowHold()
+{
+
+	if (GetBowState() == EBowState::None) {
+		SetBowState(EBowState::StartPullBack);
+	}
+	else if (GetBowState() == EBowState::StartPullBack) {
+
+		SetBowState(EBowState::EndPullBack);
+		Montage_Pause();
+		//BowLing Animation
+		AALCharacterPlayer* player = Cast<AALCharacterPlayer>(GetOwningActor());
+		if (player) {
+			player->PauseBowLine();
+		}
+
+	}
+
+
 }

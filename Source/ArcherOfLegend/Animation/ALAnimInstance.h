@@ -9,6 +9,16 @@
 /**
  * 
  */
+
+UENUM(BlueprintType)
+enum class EBowState : uint8
+{
+	None  UMETA(DisplayName = "None"),
+	StartPullBack      UMETA(DisplayName = "StartPullBack"),
+	EndPullBack      UMETA(DisplayName = "EndPullBack")
+
+};
+
 UCLASS()
 class ARCHEROFLEGEND_API UALAnimInstance : public UAnimInstance
 {
@@ -16,6 +26,8 @@ class ARCHEROFLEGEND_API UALAnimInstance : public UAnimInstance
 
 public:
 	UALAnimInstance();
+	
+	float MonoMontage_Play(UAnimMontage* MontageToPlay, float InPlayRate = 1.f, EMontagePlayReturnType ReturnValueType = EMontagePlayReturnType::MontageLength, float InTimeToStartMontageAt = 0.f, bool bStopAllMontages = true);
 
 protected:
 	virtual void NativeInitializeAnimation() override;
@@ -55,6 +67,8 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Character)
 	float UpperBlendWeight;
 
+
+
 public:
 	UFUNCTION(BlueprintCallable, Category = "Weapon")
 	void SwapFirstWeaponHand();
@@ -63,6 +77,16 @@ public:
 
 	void SetWeaponState(bool bHandWeapon){ IsHandWeapon = bHandWeapon;}
 	void SetUpperBlendWeight(float weight) { UpperBlendWeight = weight; }
-	
+	float GetUpperBlendWeight(){return UpperBlendWeight;}
+	//Attack
+public: 
+
+	//Attack
+	EBowState bHoldBow;
+	EBowState GetBowState(){return bHoldBow;}
+	void SetBowState(EBowState state){ bHoldBow  = state;}
+	UFUNCTION(BlueprintCallable, Category = "Attck")
+	void OnBowHold();
+
 
 };
